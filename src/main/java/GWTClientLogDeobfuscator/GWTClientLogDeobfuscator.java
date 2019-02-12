@@ -42,6 +42,7 @@ import org.json.JSONObject;
 
 public class GWTClientLogDeobfuscator {
 
+	private static final String CONSTRUCTOR_NEW_KEYWORD = "new ";
 	private static String endOfProcessMessage;
 
 	public static void main(String[] args) throws IOException, ParseException {
@@ -330,6 +331,14 @@ public class GWTClientLogDeobfuscator {
 				if (requiredString != null && !requiredString.isEmpty()) {
 					String key = requiredString;
 					String methodName = map.get(key);
+					if (key.startsWith(CONSTRUCTOR_NEW_KEYWORD)) {
+						// this is a constructor
+						key = key.substring(4);
+						String newMethodName = map.get(key);
+						if (newMethodName !=null) {
+							methodName = CONSTRUCTOR_NEW_KEYWORD + newMethodName; 
+						}
+					}
 					methodCallList.add(methodName == null ? line : methodName);
 				} else {
 					methodCallList.add(line);
